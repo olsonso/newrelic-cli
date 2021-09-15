@@ -11,6 +11,7 @@ import (
 
 type HTTPClientInterface interface {
 	Get(ctx context.Context, url string) ([]byte, error)
+	Post(ctx context.Context, url string, requestBody []byte) ([]byte, error)
 	Do(req *http.Request) (*http.Response, error)
 }
 
@@ -19,7 +20,7 @@ type HTTPClient struct {
 	apiKey     string
 }
 
-func NewHTTPClient(apiKey string) *HTTPClient {
+func NewHTTPClient(apiKey string) HTTPClientInterface {
 	return &HTTPClient{
 		httpClient: &http.Client{},
 		apiKey:     apiKey,

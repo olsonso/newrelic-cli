@@ -16,7 +16,9 @@ import (
 func TestGenerateRedirectURL_InstallSuccess(t *testing.T) {
 	t.Parallel()
 
-	g := NewPlatformLinkGenerator()
+	response := `{"url":""}`
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	g := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 
 	recipeName := "infrastructure-agent-installer"
 	entityGUID := "ABC123"
@@ -44,7 +46,9 @@ func TestGenerateRedirectURL_InstallSuccess(t *testing.T) {
 func TestGenerateRedirectURL_InstallPartialSuccess(t *testing.T) {
 	t.Parallel()
 
-	g := NewPlatformLinkGenerator()
+	response := `{"url":""}`
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	g := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 
 	infraEntityGUID := "ABC123"
 	infraRecipe := types.OpenInstallationRecipe{
@@ -82,7 +86,9 @@ func TestGenerateRedirectURL_InstallPartialSuccess(t *testing.T) {
 func TestGenerateRedirectURL_InstallFailed(t *testing.T) {
 	t.Parallel()
 
-	g := NewPlatformLinkGenerator()
+	response := `{"url":""}`
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	g := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 
 	infraRecipe := types.OpenInstallationRecipe{
 		Name:        "infrastructure-agent-installer",
@@ -107,7 +113,9 @@ func TestGenerateRedirectURL_InstallFailed(t *testing.T) {
 func TestGenerateRedirectURL_NoRecipesInstalled(t *testing.T) {
 	t.Parallel()
 
-	g := NewPlatformLinkGenerator()
+	response := `{"url":""}`
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	g := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 
 	installStatus := InstallStatus{}
 	expectedEncodedQueryParamSubstring := "eyJuZXJkbGV0SWQiOiJucjEtaW5zdGFsbC1uZXdyZWxpYy5pbnN0YWxsYXRpb24tcGxhbiIsInJlZmVycmVyIjoibmV3cmVsaWMtY2xpIn0="

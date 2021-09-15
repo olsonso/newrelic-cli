@@ -15,7 +15,9 @@ import (
 	"github.com/newrelic/newrelic-client-go/pkg/region"
 )
 
-type PlatformLinkGenerator struct{}
+type PlatformLinkGenerator struct {
+	httpClient utils.HTTPClientInterface
+}
 
 var nrPlatformHostnames = struct {
 	Staging string
@@ -27,8 +29,10 @@ var nrPlatformHostnames = struct {
 	EU:      "one.eu.newrelic.com",
 }
 
-func NewPlatformLinkGenerator() *PlatformLinkGenerator {
-	return &PlatformLinkGenerator{}
+func NewPlatformLinkGenerator(httpClient utils.HTTPClientInterface) *PlatformLinkGenerator {
+	return &PlatformLinkGenerator{
+		httpClient: httpClient,
+	}
 }
 
 func (g *PlatformLinkGenerator) GenerateExplorerLink(status InstallStatus) string {
@@ -81,39 +85,47 @@ func generateReferrerParam(entityGUID string) string {
 }
 
 func generateExplorerLink(status InstallStatus) string {
-	longURL := fmt.Sprintf("https://%s/launcher/nr1-core.explorer?platform[filters]=%s&platform[accountId]=%d&cards[0]=%s",
+	longURL := generateExplorerURL(status)
+	shortURL, err := generateShortNewRelicURL(longURL)
+	if err != nil || shortURL == "" {
+		return longURL
+	}
+
+	return shortURL
+}
+
+func generateExplorerURL(status InstallStatus) string {
+	return fmt.Sprintf("https://%s/launcher/nr1-core.explorer?platform[filters]=%s&platform[accountId]=%d&cards[0]=%s",
 		nrPlatformHostname(),
 		utils.Base64Encode(status.successLinkConfig.Filter),
 		configAPI.GetActiveProfileAccountID(),
 		utils.Base64Encode(generateReferrerParam(status.HostEntityGUID())),
 	)
-
-	shortURL, err := shortenURL(longURL)
-	if err != nil {
-		return longURL
-	}
-
-	return shortURL
 }
 
 func generateEntityLink(entityGUID string) string {
-	longURL := fmt.Sprintf("https://%s/redirect/entity/%s", nrPlatformHostname(), entityGUID)
-	shortURL, err := shortenURL(longURL)
-	if err != nil {
+	longURL := generateEntityURL(entityGUID)
+	shortURL, err := generateShortNewRelicURL(longURL)
+	if err != nil || shortURL == "" {
 		return longURL
 	}
 
 	return shortURL
 }
 
-// The shortenURL function utilizes a New Relic service to convert
-// a New Relic URL to a shortened URL that redirects to the original URL.
+func generateEntityURL(entityGUID string) string {
+	return fmt.Sprintf("https://%s/redirect/entity/%s", nrPlatformHostname(), entityGUID)
+}
+
+// The generateShortNewRelicURL function utilizes a New Relic service to
+// convert a New Relic URL to a shortened version of the provided URL.
+// The shortened URL redirects to the original URL.
 //
 // If an error occurs while attempting to shorten the URL, the original
 // long URL is returned along with the error.
 //
 // Note: This API only works in a production environment.
-func shortenURL(longURL string) (string, error) {
+func generateShortNewRelicURL(longURL string) (string, error) {
 	const shortURLServiceURL = "https://urly.service.newrelic.com/"
 
 	httpClient := utils.NewHTTPClient(os.Getenv("NEW_RELIC_API_KEY"))

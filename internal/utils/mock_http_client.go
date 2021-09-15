@@ -10,8 +10,9 @@ import (
 )
 
 type MockHTTPClient struct {
-	GetCallCount int
-	MockDoFunc   MockHTTPDoFunc
+	GetCallCount  int
+	PostCallCount int
+	MockDoFunc    MockHTTPDoFunc
 }
 
 type MockHTTPDoFunc func(req *http.Request) (*http.Response, error)
@@ -28,6 +29,20 @@ func (c *MockHTTPClient) Get(ctx context.Context, url string) ([]byte, error) {
 	c.GetCallCount++
 
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	resp, err := c.Do(req)
+	if err != nil {
+		log.Debug(err.Error())
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
+}
+
+func (c *MockHTTPClient) Post(ctx context.Context, url string, requestBody []byte) ([]byte, error) {
+	c.PostCallCount++
+
+	rBody := bytes.NewBuffer(requestBody)
+	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, url, rBody)
 	resp, err := c.Do(req)
 	if err != nil {
 		log.Debug(err.Error())
@@ -60,6 +75,12 @@ func CreateMockGetResponse(response string, err error) func(ctx context.Context,
 }
 
 func CreateMockEmptyGetResponse() func(ctx context.Context, url string) ([]byte, error) {
+	return func(ctx context.Context, url string) ([]byte, error) {
+		return ([]byte)(""), nil
+	}
+}
+
+func CreateMockEmptyPostResponse() func(ctx context.Context, url string) ([]byte, error) {
 	return func(ctx context.Context, url string) ([]byte, error) {
 		return ([]byte)(""), nil
 	}

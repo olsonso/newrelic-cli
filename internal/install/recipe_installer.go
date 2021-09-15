@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -78,7 +79,7 @@ func NewRecipeInstaller(ic types.InstallerContext, nrClient *newrelic.NewRelic) 
 		execution.NewInstallEventsReporter(&nrClient.InstallEvents),
 	}
 	lkf := NewServiceLicenseKeyFetcher(&nrClient.NerdGraph)
-	slg := execution.NewPlatformLinkGenerator()
+	slg := execution.NewPlatformLinkGenerator(utils.NewHTTPClient(os.Getenv("NEW_RELIC_API_KEY")))
 	statusRollup := execution.NewInstallStatus(ers, slg)
 
 	d := discovery.NewPSUtilDiscoverer()

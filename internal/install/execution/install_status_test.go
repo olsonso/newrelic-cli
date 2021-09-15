@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 package execution
@@ -9,17 +10,22 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/newrelic/newrelic-cli/internal/install/types"
+	"github.com/newrelic/newrelic-cli/internal/utils"
 )
 
 func TestNewInstallStatus(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	require.NotEmpty(t, s.Timestamp)
 	require.NotEmpty(t, s.DocumentID)
 }
 
 func TestStatusWithAvailableRecipes_Basic(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	r := []types.OpenInstallationRecipe{{
 		Name: "testRecipe1",
@@ -37,7 +43,9 @@ func TestStatusWithAvailableRecipes_Basic(t *testing.T) {
 }
 
 func TestStatusWithRecipeEvent_Basic(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	r := types.OpenInstallationRecipe{Name: "testRecipe"}
 	e := RecipeStatusEvent{Recipe: r}
@@ -52,7 +60,9 @@ func TestStatusWithRecipeEvent_Basic(t *testing.T) {
 }
 
 func TestStatusWithRecipeEvent_ErrorMessages(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	r := types.OpenInstallationRecipe{Name: "testRecipe"}
 	e := RecipeStatusEvent{
@@ -72,7 +82,9 @@ func TestStatusWithRecipeEvent_ErrorMessages(t *testing.T) {
 }
 
 func TestExecutionStatusWithRecipeEvent_RecipeExists(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	r := types.OpenInstallationRecipe{Name: "testRecipe"}
 	e := RecipeStatusEvent{Recipe: r}
@@ -95,7 +107,9 @@ func TestExecutionStatusWithRecipeEvent_RecipeExists(t *testing.T) {
 }
 
 func TestStatusWithRecipeEvent_EntityGUID(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	r := types.OpenInstallationRecipe{Name: "testRecipe"}
 	e := RecipeStatusEvent{Recipe: r, EntityGUID: "testGUID"}
@@ -109,7 +123,9 @@ func TestStatusWithRecipeEvent_EntityGUID(t *testing.T) {
 }
 
 func TestStatusWithRecipeEvent_EntityGUIDExists(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	s.withEntityGUID("testGUID")
 	r := types.OpenInstallationRecipe{Name: "testRecipe"}
@@ -124,7 +140,9 @@ func TestStatusWithRecipeEvent_EntityGUIDExists(t *testing.T) {
 }
 
 func TestInstallStatus_statusUpdateMethods(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	r := types.OpenInstallationRecipe{Name: "testRecipe"}
 	e := RecipeStatusEvent{Recipe: r, EntityGUID: "testGUID"}
@@ -167,7 +185,9 @@ func TestInstallStatus_statusUpdateMethods(t *testing.T) {
 }
 
 func TestInstallStatus_observabilityPackStatusUpdateMethods(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	eventFetchPending := ObservabilityPackStatusEvent{
@@ -229,7 +249,9 @@ func TestInstallStatus_observabilityPackStatusUpdateMethods(t *testing.T) {
 }
 
 func TestInstallStatus_shouldNotFailAvailableOnComplete(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	r := types.OpenInstallationRecipe{Name: "testRecipe"}
 
@@ -240,7 +262,9 @@ func TestInstallStatus_shouldNotFailAvailableOnComplete(t *testing.T) {
 }
 
 func TestInstallStatus_shouldFailAvailableOnCancel(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 	r := types.OpenInstallationRecipe{Name: "testRecipe"}
 
@@ -251,7 +275,9 @@ func TestInstallStatus_shouldFailAvailableOnCancel(t *testing.T) {
 }
 
 func TestInstallStatus_multipleRecipeStatuses(t *testing.T) {
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{NewMockStatusReporter()}, slg)
 	recipeInstalled := types.OpenInstallationRecipe{Name: "installed"}
 	installedRecipeEvent := RecipeStatusEvent{Recipe: recipeInstalled, EntityGUID: "installedGUID"}
@@ -281,7 +307,9 @@ func TestInstallStatus_multipleRecipeStatuses(t *testing.T) {
 
 func TestStatus_HTTPSProxy(t *testing.T) {
 	os.Setenv("HTTPS_PROXY", "localhost:8888")
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	s := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	require.Equal(t, "localhost:8888", s.HTTPSProxy)

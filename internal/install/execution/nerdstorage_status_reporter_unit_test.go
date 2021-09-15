@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 package execution
@@ -9,12 +10,15 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/newrelic/newrelic-cli/internal/install/types"
+	"github.com/newrelic/newrelic-cli/internal/utils"
 )
 
 func TestRecipeAvailable_Basic(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	err := r.RecipeAvailable(status, types.OpenInstallationRecipe{})
@@ -24,7 +28,9 @@ func TestRecipeAvailable_Basic(t *testing.T) {
 func TestRecipeAvailable_UserScopeError(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	c.WriteDocumentWithUserScopeErr = errors.New("error")
@@ -36,7 +42,9 @@ func TestRecipeAvailable_UserScopeError(t *testing.T) {
 func TestRecipeInstalled_Basic(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 	status.withEntityGUID("testGuid")
 	e := RecipeStatusEvent{}
@@ -51,7 +59,9 @@ func TestRecipeInstalled_Basic(t *testing.T) {
 func TestRecipeInstalled_UserScopeOnly(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 	e := RecipeStatusEvent{}
 
@@ -65,7 +75,9 @@ func TestRecipeInstalled_UserScopeOnly(t *testing.T) {
 func TestRecipeInstalled_MultipleEntityGUIDs(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 	status.withEntityGUID("testGuid")
 	status.withEntityGUID("testGuid2")
@@ -81,7 +93,9 @@ func TestRecipeInstalled_MultipleEntityGUIDs(t *testing.T) {
 func TestRecipeInstalled_UserScopeError(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 	status.withEntityGUID("testGuid")
 	e := RecipeStatusEvent{}
@@ -95,7 +109,9 @@ func TestRecipeInstalled_UserScopeError(t *testing.T) {
 func TestRecipeInstalled_EntityScopeError(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 	status.withEntityGUID("testGuid")
 	e := RecipeStatusEvent{}
@@ -109,7 +125,9 @@ func TestRecipeInstalled_EntityScopeError(t *testing.T) {
 func TestRecipeFailed_Basic(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 	status.withEntityGUID("testGuid")
 	e := RecipeStatusEvent{}
@@ -124,7 +142,9 @@ func TestRecipeFailed_Basic(t *testing.T) {
 func TestRecipeFailed_UserScopeOnly(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	e := RecipeStatusEvent{}
@@ -139,7 +159,9 @@ func TestRecipeFailed_UserScopeOnly(t *testing.T) {
 func TestRecipeFailed_UserScopeError(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 	status.withEntityGUID("testGuid")
 	e := RecipeStatusEvent{}
@@ -153,7 +175,9 @@ func TestRecipeFailed_UserScopeError(t *testing.T) {
 func TestRecipeFailed_EntityScopeError(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 	status.withEntityGUID("testGuid")
 	e := RecipeStatusEvent{}
@@ -167,7 +191,9 @@ func TestRecipeFailed_EntityScopeError(t *testing.T) {
 func TestInstallComplete_Basic(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	err := r.InstallComplete(status)
@@ -180,7 +206,9 @@ func TestInstallComplete_Basic(t *testing.T) {
 func TestInstallComplete_UserScopeError(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	c.WriteDocumentWithUserScopeErr = errors.New("error")
@@ -192,7 +220,9 @@ func TestInstallComplete_UserScopeError(t *testing.T) {
 func TestInstallCanceled_Basic(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	err := r.InstallCanceled(status)
@@ -205,7 +235,9 @@ func TestInstallCanceled_Basic(t *testing.T) {
 func TestInstallCanceled_UserScopeError(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	c.WriteDocumentWithUserScopeErr = errors.New("error")
@@ -217,7 +249,9 @@ func TestInstallCanceled_UserScopeError(t *testing.T) {
 func TestDiscoveryComplete_Basic(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	err := r.DiscoveryComplete(status, types.DiscoveryManifest{})
@@ -230,7 +264,9 @@ func TestDiscoveryComplete_Basic(t *testing.T) {
 func TestDiscoveryComplete_UserScopeError(t *testing.T) {
 	c := NewMockNerdStorageClient()
 	r := NewNerdStorageStatusReporter(c)
-	slg := NewPlatformLinkGenerator()
+	response := ""
+	doFunc := utils.CreateMockHTTPDoFunc(response, 201, nil)
+	slg := NewPlatformLinkGenerator(utils.NewMockHTTPClient(doFunc))
 	status := NewInstallStatus([]StatusSubscriber{}, slg)
 
 	c.WriteDocumentWithUserScopeErr = errors.New("error")
