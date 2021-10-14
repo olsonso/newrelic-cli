@@ -4,6 +4,8 @@
 package execution
 
 import (
+	// "fmt"
+	// "os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -125,4 +127,31 @@ func Test_ShouldNotGenerateExplorerLinkWhenNoRecipes(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 0, g.GenerateEntityLinkCallCount)
 	require.Equal(t, 0, g.GenerateExplorerLinkCallCount)
+}
+
+func Test_ShouldNotPrintDetectedRecipeInSummary(t *testing.T) {
+	r := NewTerminalStatusReporter()
+
+	status := &InstallStatus{}
+	recipeInstalled := &RecipeStatus{
+		DisplayName: "test-recipe-installed",
+		Status:      RecipeStatusTypes.INSTALLED,
+	}
+	recipeDetected := &RecipeStatus{
+		DisplayName: "test-recipe-detected",
+		Status:      RecipeStatusTypes.DETECTED,
+	}
+
+	status.Statuses = []*RecipeStatus{
+		recipeInstalled,
+		recipeDetected,
+	}
+
+	// expected := []*RecipeStatus{
+	// 	recipeInstalled,
+	// }
+
+	recipesToSummarize := r.getRecipesStatusesForInstallationSummary(status)
+
+	require.Equal(t, 1, len(recipesToSummarize))
 }
