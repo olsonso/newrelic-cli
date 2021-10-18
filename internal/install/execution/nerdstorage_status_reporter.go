@@ -36,6 +36,10 @@ func (r NerdstorageStatusReporter) RecipesSelected(status *InstallStatus, recipe
 	return nil
 }
 
+func (r NerdstorageStatusReporter) RecipesPending(status *InstallStatus, recipes []types.OpenInstallationRecipe) error {
+	return nil
+}
+
 // RecipeAvailable reports that a recipe is available for installation on
 // the underlying host.
 func (r NerdstorageStatusReporter) RecipeAvailable(status *InstallStatus, recipe types.OpenInstallationRecipe) error {

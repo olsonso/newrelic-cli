@@ -32,6 +32,7 @@ type MockStatusReporter struct {
 	DiscoveryCompleteCallCount int
 	RecipeUnsupportedCallCount int
 	RecipeDetectedCallCount    int
+	RecipesPendingCallCount    int
 
 	ReportSkipped     map[string]int
 	ReportInstalled   map[string]int
@@ -52,6 +53,11 @@ func NewMockStatusReporter() *MockStatusReporter {
 
 func (r *MockStatusReporter) RecipeDetected(status *InstallStatus, recipe types.OpenInstallationRecipe) error {
 	r.RecipeDetectedCallCount++
+	return nil
+}
+
+func (r *MockStatusReporter) RecipesPending(status *InstallStatus, recipe types.OpenInstallationRecipe) error {
+	r.RecipesPendingCallCount++
 	return nil
 }
 

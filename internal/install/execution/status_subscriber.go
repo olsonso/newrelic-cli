@@ -18,6 +18,7 @@ type StatusSubscriber interface {
 	RecipeSkipped(status *InstallStatus, event RecipeStatusEvent) error
 	RecipeUnsupported(status *InstallStatus, event RecipeStatusEvent) error
 	RecipesSelected(status *InstallStatus, recipes []types.OpenInstallationRecipe) error
+	RecipesPending(status *InstallStatus, recipes []types.OpenInstallationRecipe) error
 }
 
 // RecipeStatusEvent represents an event in a recipe's execution.

@@ -69,6 +69,12 @@ func (r InstallEventsReporter) RecipesSelected(status *InstallStatus, recipes []
 	return nil
 }
 
+func (r InstallEventsReporter) RecipesPending(status *InstallStatus, recipes []types.OpenInstallationRecipe) error {
+	return r.createMultipleRecipeInstallEvents(status, RecipeStatusEvent{})
+
+	// return nil
+}
+
 func (r InstallEventsReporter) InstallStarted(status *InstallStatus) error {
 	return r.createInstallStatusEvent(installevents.InstallationInstallStateTypeTypes.STARTED, status, RecipeStatusEvent{})
 }

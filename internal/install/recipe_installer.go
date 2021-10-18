@@ -280,6 +280,8 @@ func (i *RecipeInstaller) install(ctx context.Context) error {
 	dependencies := resolveDependencies(recipesForInstall, recipesForPlatform)
 	recipesForInstall = addIfMissing(recipesForInstall, dependencies)
 
+	i.status.RecipesPending(recipesForInstall)
+
 	if err = i.installRecipes(ctx, m, recipesForInstall); err != nil {
 		return err
 	}

@@ -68,6 +68,7 @@ var RecipeStatusTypes = struct {
 	RECOMMENDED RecipeStatusType
 	UNSUPPORTED RecipeStatusType
 	DETECTED    RecipeStatusType
+	PENDING     RecipeStatusType
 }{
 	AVAILABLE:   "AVAILABLE",
 	CANCELED:    "CANCELED",
@@ -78,6 +79,7 @@ var RecipeStatusTypes = struct {
 	RECOMMENDED: "RECOMMENDED",
 	UNSUPPORTED: "UNSUPPORTED",
 	DETECTED:    "DETECTED",
+	PENDING:     "PENDING",
 }
 
 type StatusError struct {
@@ -148,6 +150,27 @@ func (s *InstallStatus) RecipesSelected(recipes []types.OpenInstallationRecipe) 
 
 	for _, r := range s.statusSubscriber {
 		if err := r.RecipesSelected(s, recipes); err != nil {
+			log.Debugf("Could not report recipe execution status: %s", err)
+		}
+	}
+}
+
+func (s *InstallStatus) RecipesPending(recipes []types.OpenInstallationRecipe) {
+	for _, r := range recipes {
+		e := RecipeStatusEvent{Recipe: r}
+		s.withRecipeEvent(e, RecipeStatusTypes.PENDING)
+	}
+
+	fmt.Print("\n\n **************************** \n")
+
+	for _, s := range s.Statuses {
+		fmt.Printf("\n RecipesPending - installStatus:  %+v \n", *s)
+	}
+
+	fmt.Print("\n **************************** \n\n")
+
+	for _, r := range s.statusSubscriber {
+		if err := r.RecipesPending(s, recipes); err != nil {
 			log.Debugf("Could not report recipe execution status: %s", err)
 		}
 	}

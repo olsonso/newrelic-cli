@@ -66,6 +66,10 @@ func (r TerminalStatusReporter) RecipesSelected(status *InstallStatus, recipes [
 	return nil
 }
 
+func (r TerminalStatusReporter) RecipesPending(status *InstallStatus, recipes []types.OpenInstallationRecipe) error {
+	return nil
+}
+
 func (r TerminalStatusReporter) RecipeAvailable(status *InstallStatus, recipe types.OpenInstallationRecipe) error {
 	return nil
 }
