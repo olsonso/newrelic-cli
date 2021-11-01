@@ -88,13 +88,8 @@ func (r NerdstorageStatusReporter) UpdateRequired(status *InstallStatus) error {
 
 func (r NerdstorageStatusReporter) writeStatus(status *InstallStatus) error {
 	i := r.buildExecutionStatusDocument(status)
-	_, err := r.client.WriteDocumentWithUserScope(i)
-	if err != nil {
-		return err
-	}
-
 	for _, g := range status.EntityGUIDs {
-		_, err = r.client.WriteDocumentWithEntityScope(g, i)
+		_, err := r.client.WriteDocumentWithEntityScope(g, i)
 		if err != nil {
 			return err
 		}
