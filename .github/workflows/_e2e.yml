@@ -1,0 +1,51 @@
+name: Testing E2E Testing
+
+on:
+  push:
+    branches: [feat/e2e-enhancements]
+  # Release workflow calls this workflow
+  workflow_call:
+    secrets:
+      PGP_PRIVATE_KEY:
+        required: true
+      SPLIT_PROD_KEY:
+        required: true
+      SPLIT_STAGING_KEY:
+        required: true
+      GIT_DEPLOYER_CANADA_AWS_PEM:
+        required: true
+      GIT_DEPLOYER_DOCKER_USER_CONFIG:
+        required: true
+
+jobs:
+  test-ubuntu:
+    name: Test - Ubuntu latest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.x
+
+      - name: Add GOBIN to PATH
+        run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+        shell: bash
+
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          repository: newrelic/open-install-library
+          path: open-install-library
+
+      - name: Compile and run install command
+        env:
+          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+        run: |
+          make recipes
+          make compile-only
+
+          ./bin/linux/newrelic install --assumeYes
